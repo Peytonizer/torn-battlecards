@@ -1,5 +1,20 @@
 # Changelog
 
+## Unreleased
+
+### Changed
+
+- **War metadata moved out of the CSV, into the app.** `faction_name`, `faction_tag`,
+  `opponent_faction`, `war_result` and `war_date` are no longer CSV columns — they
+  never had a source in Torn's export, and inheriting them down the file still meant
+  retyping the same five values on row 1 of every new upload. They are now two small
+  forms in the app: "Your faction" (name + tag, persisted in `localStorage` like the
+  logo) and "This war" (opponent, result, date, typed fresh per upload; date defaults
+  to today). Editing a field re-stamps every loaded member and re-renders the
+  preview immediately. A CSV that still has these columns (from before this change,
+  or a raw export) parses fine — the columns are recognised and silently dropped.
+- `data/template.csv` and `data/sample-war.csv` updated to the 15-column schema.
+
 ## v0.1 — 2026-08-26
 
 First working version: CSV in, battlecard PNGs out.

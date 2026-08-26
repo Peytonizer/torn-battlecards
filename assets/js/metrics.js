@@ -14,11 +14,6 @@ var TBC = window.TBC || (window.TBC = {});
      in the same place. */
   var FIELDS = [
     { key: 'name',             type: 'text', required: true,  aliases: ['player', 'member', 'username'] },
-    { key: 'faction_name',     type: 'text', inherit: true,   aliases: ['faction'] },
-    { key: 'faction_tag',      type: 'text', inherit: true,   aliases: ['tag'] },
-    { key: 'opponent_faction', type: 'text', inherit: true,   aliases: ['opponent', 'enemy_faction'] },
-    { key: 'war_result',       type: 'text', inherit: true,   aliases: ['result'] },
-    { key: 'war_date',         type: 'text', inherit: true,   aliases: ['date'] },
     { key: 'respect_gain',     type: 'num',  aliases: ['respect gained'] },
     { key: 'respect_loss',     type: 'num',  aliases: ['respect lost'] },
     { key: 'total_energy',     type: 'num',  aliases: ['energy'] },
@@ -93,6 +88,14 @@ var TBC = window.TBC || (window.TBC = {});
     m['total_respect'] = 'net_respect_input';
     m['hospitalization'] = null;   // present in raw exports, not shown on the card
     m['hospitalisation'] = null;
+    // War metadata moved into the app itself (see app.js) so it is typed once per
+    // upload instead of repeated on every row. A CSV from before that change, or a
+    // raw export still carrying these, is recognised and silently dropped rather
+    // than reported as an unknown column.
+    ['faction_name', 'faction', 'faction_tag', 'tag', 'opponent_faction', 'opponent',
+      'enemy_faction', 'war_result', 'result', 'war_date', 'date'].forEach(function (k) {
+      m[k] = null;
+    });
     return m;
   })();
 
@@ -104,7 +107,6 @@ var TBC = window.TBC || (window.TBC = {});
     var warnings = [];
     var unknown = [];
     var members = [];
-    var inherited = {};
 
     if (!rows.length) {
       warnings.push('The file has no data rows.');
@@ -128,11 +130,6 @@ var TBC = window.TBC || (window.TBC = {});
 
       FIELDS.forEach(function (f) {
         var v = rec[f.key];
-        if (f.inherit) {
-          // War metadata only has to be filled in on the first row; later blanks
-          // inherit it, so officers can leave those columns empty further down.
-          if (v) inherited[f.key] = v; else rec[f.key] = inherited[f.key] || '';
-        }
         if (f.type === 'num') rec[f.key] = toNumber(v);
         else if (rec[f.key] == null) rec[f.key] = '';
       });

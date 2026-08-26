@@ -74,32 +74,28 @@ Vendored libraries are committed rather than installed. That is the whole point 
 
 One header row, one row per member, one table. (The original export had two
 different tables side by side in one file, with the second table's header on row 1
-— that is what made it awkward to handle.)
+— that is what made it awkward to handle.) War metadata — your faction, the
+opponent, the result, the date — is **not** in the CSV at all; see §5.4.
 
 ### 5.1 Columns
 
 | # | Column | Type | Required | Notes |
 |---|---|---|---|---|
 | 1 | `name` | text | ✅ | Torn handle. Rows with no name are skipped. |
-| 2 | `faction_name` | text | | Fill on row 1 only; blanks below inherit it. |
-| 3 | `faction_tag` | text | | Ditto. Rendered as `FACTION NAME [TAG]`. |
-| 4 | `opponent_faction` | text | | Ditto. |
-| 5 | `war_result` | text | | Ditto. Free text — "Win", "Loss". |
-| 6 | `war_date` | text | | Ditto. Free text; `YYYY-MM-DD` sorts and reads well. |
-| 7 | `respect_gain` | number | | |
-| 8 | `respect_loss` | number | | |
-| 9 | `total_energy` | number | | |
-| 10 | `war_hits` | number | | |
-| 11 | `losses` | number | | Attacks lost. |
-| 12 | `average_ff` | number | | Average fair-fight multiplier. |
-| 13 | `defends_lost` | number | | Torn exports this as "Defends Loss". |
-| 14 | `chain_hits` | number | | |
-| 15 | `assists` | number | | |
-| 16 | `foreign_attacks` | number | | |
-| 17 | `retaliations` | number | | |
-| 18 | `grade` | text | | Typed by hand. Shown in the gold impact bar, e.g. `A+`, `B-`. |
-| 19 | `impact_label` | text | | Typed by hand, e.g. `SOLID CONTRIBUTOR`. |
-| 20 | `notes` | text | | Typed by hand. The Coach's Notes panel. Quote it if it contains commas. |
+| 2 | `respect_gain` | number | | |
+| 3 | `respect_loss` | number | | |
+| 4 | `total_energy` | number | | |
+| 5 | `war_hits` | number | | |
+| 6 | `losses` | number | | Attacks lost. |
+| 7 | `average_ff` | number | | Average fair-fight multiplier. |
+| 8 | `defends_lost` | number | | Torn exports this as "Defends Loss". |
+| 9 | `chain_hits` | number | | |
+| 10 | `assists` | number | | |
+| 11 | `foreign_attacks` | number | | |
+| 12 | `retaliations` | number | | |
+| 13 | `grade` | text | | Typed by hand. Shown in the gold impact bar, e.g. `A+`, `B-`. |
+| 14 | `impact_label` | text | | Typed by hand, e.g. `SOLID CONTRIBUTOR`. |
+| 15 | `notes` | text | | Typed by hand. The Coach's Notes panel. Quote it if it contains commas. |
 
 Blank numeric cells are read as `0`. Whitespace is trimmed.
 
@@ -120,8 +116,11 @@ Blank numeric cells are read as `0`. Whitespace is trimmed.
 4. **`snake_case` headers.** No spaces to quote, no capitalisation to get wrong.
 5. **Added the manual columns** `grade`, `impact_label`, `notes` — previously these
    existed on the card with nowhere to come from.
-6. **Added war metadata** `faction_name`, `faction_tag`, `opponent_faction`,
-   `war_result`, `war_date`, with row-1 inheritance so they are typed once.
+6. **Moved war metadata out of the CSV entirely** (§5.4) — it never had a source in
+   Torn's export anyway; it was typed by the officer, once per row-1, and inherited
+   down the file. That inheritance still repeated the same five values across every
+   row of the underlying spreadsheet and had to be re-typed for every new upload.
+   It is now typed once per session, in the app.
 7. **Dropped `Hospitalization`.** Not shown anywhere on the card. If it should be,
    add it to `FIELDS`, `DETAIL` and `RANKED` in `metrics.js`.
 
@@ -130,7 +129,26 @@ Blank numeric cells are read as `0`. Whitespace is trimmed.
 `metrics.js` matches headers case-, space- and underscore-insensitively and carries
 aliases, so a raw Torn export can be pasted in with its original headers
 ("Defends Loss", "Average FF", "Total Energy") and still parse. Unrecognised columns
-are ignored and reported in the UI rather than causing a failure.
+are ignored and reported in the UI rather than causing a failure. A CSV from before
+§5.4 (or a raw export) that still has `faction_name`, `faction_tag`,
+`opponent_faction`, `war_result` or `war_date` columns parses fine — those columns
+are recognised and silently dropped rather than flagged as unknown, since the app
+fields below now win regardless.
+
+### 5.4 War metadata lives in the app, not the CSV
+
+Faction name/tag, opponent, result and date describe the war, not the member, so
+one CSV row's worth of them is one too many: every row repeated the same five
+values, and inheriting them down the file (the old approach) still meant retyping
+them on row 1 of every new upload. They are now two small forms in the app itself:
+
+- **"Your faction"** (name + tag) — persisted in `localStorage` alongside the logo,
+  since it rarely changes between wars.
+- **"This war"** (opponent, result, date) — typed fresh each upload; the date
+  defaults to today.
+
+Editing any of these fields stamps the value onto every loaded member immediately
+and re-renders the live preview — no re-upload needed to fix a typo.
 
 ## 6. Derived values
 
@@ -203,6 +221,10 @@ Uploaded in the app, stored as a data URI in `localStorage` under `tbc.factionLo
 so it persists per browser. It cannot live in the CSV. Falls back to the faction's
 initials in a gold ring. `localStorage` access is wrapped in `try`/`catch` for
 private-browsing mode.
+
+Faction name and tag persist the same way, under `tbc.myFaction` (see §5.4) —
+also wrapped in `try`/`catch`, also gone in private browsing, in which case the
+officer just retypes them for that session.
 
 ## 10. Known gaps / backlog
 

@@ -51,6 +51,59 @@
     renderPreview();
   });
 
+  /* --------------------------------------------------------- war details */
+  /* Faction name/tag/opponent/result/date used to be CSV columns, repeated on
+     every row and only typed once thanks to row-1 inheritance. They are war
+     metadata, not per-member data, so they live here instead — typed once per
+     upload and stamped onto every member record. */
+
+  var FACTION_KEY = 'tbc.myFaction';
+  var warFieldIds = ['myFactionName', 'myFactionTag', 'opponentFaction', 'warResult', 'warDate'];
+
+  function loadStoredFaction() {
+    try {
+      var f = JSON.parse(localStorage.getItem(FACTION_KEY) || 'null');
+      if (f) { $('myFactionName').value = f.name || ''; $('myFactionTag').value = f.tag || ''; }
+    } catch (e) { /* private browsing — fields just start blank */ }
+  }
+
+  function storeFaction() {
+    try {
+      localStorage.setItem(FACTION_KEY, JSON.stringify({
+        name: $('myFactionName').value.trim(), tag: $('myFactionTag').value.trim()
+      }));
+    } catch (e) { /* private browsing — just won't persist */ }
+  }
+
+  /* Stamp the current form values onto every loaded member. Safe to call before
+     any CSV is loaded (state.members is empty) or live, after editing a field. */
+  function applyWarMeta() {
+    var meta = {
+      faction_name: $('myFactionName').value.trim(),
+      faction_tag: $('myFactionTag').value.trim(),
+      opponent_faction: $('opponentFaction').value.trim(),
+      war_result: $('warResult').value,
+      war_date: $('warDate').value
+    };
+    state.members.forEach(function (m) {
+      m.faction_name = meta.faction_name;
+      m.faction_tag = meta.faction_tag;
+      m.opponent_faction = meta.opponent_faction;
+      m.war_result = meta.war_result;
+      m.war_date = meta.war_date;
+    });
+  }
+
+  warFieldIds.forEach(function (id) {
+    ['input', 'change'].forEach(function (ev) {
+      $(id).addEventListener(ev, function () {
+        storeFaction();
+        applyWarMeta();
+        if (state.members.length) renderPreview();
+      });
+    });
+  });
+
   /* ------------------------------------------------------------ CSV intake */
 
   function handleCsvText(text, label) {
@@ -72,6 +125,7 @@
 
     state.members = M.addRanks(result.members);
     state.active = 0;
+    applyWarMeta();
 
     fileLabel.textContent = label + ' — ' + state.members.length + ' members';
 
@@ -213,6 +267,9 @@
   /* ----------------------------------------------------------------- start */
 
   loadStoredLogo();
+  loadStoredFaction();
+  // Default to today — the common case is generating cards right after a war ends.
+  $('warDate').value = new Date().toISOString().slice(0, 10);
   // Wait for the bundled webfonts before any measuring happens, otherwise the
   // first preview lays out with a fallback font and looks wrong until a resize.
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { renderPreview(); });

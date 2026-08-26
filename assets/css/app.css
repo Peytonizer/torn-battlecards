@@ -121,7 +121,7 @@ button.primary:hover:not(:disabled) { background: var(--gold-bright); }
 .preview-frame { width: 100%; overflow: hidden; border-radius: 10px; border: 1px solid var(--line); }
 .preview-scaler { transform-origin: top left; }
 
-select {
+select, input[type="text"], input[type="date"] {
   font-family: 'Barlow Condensed', sans-serif;
   font-size: 16px;
   background: var(--surface-2);
@@ -131,6 +131,9 @@ select {
   padding: 8px 10px;
   margin-left: 6px;
 }
+
+.field { color: var(--muted); font-size: 15px; letter-spacing: .5px; text-transform: uppercase; }
+.field input, .field select { text-transform: none; letter-spacing: normal; font-size: 16px; color: var(--text); }
 
 .progress { font-family: 'Oswald', sans-serif; letter-spacing: 1px; color: var(--muted); font-size: 15px; }
 

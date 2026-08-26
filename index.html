@@ -33,16 +33,36 @@
   </section>
 
   <section class="card-panel">
-    <h2>2 &middot; Faction logo <span class="hint" style="text-transform:none;letter-spacing:0">(optional, remembered on this computer)</span></h2>
+    <h2>2 &middot; Your faction <span class="hint" style="text-transform:none;letter-spacing:0">(remembered on this computer)</span></h2>
     <div class="row">
+      <label class="field">Name <input type="text" id="myFactionName" placeholder="e.g. Silver Brigade"></label>
+      <label class="field">Tag <input type="text" id="myFactionTag" placeholder="optional"></label>
       <input type="file" id="logoInput" accept="image/*">
       <button type="button" id="clearLogo">Clear logo</button>
-      <span class="hint">A square PNG works best. Nothing is uploaded anywhere &mdash; it stays in this browser.</span>
+    </div>
+    <div class="row">
+      <span class="hint">Logo: a square PNG works best. Nothing is uploaded anywhere &mdash; it stays in this browser.</span>
+    </div>
+  </section>
+
+  <section class="card-panel">
+    <h2>3 &middot; This war</h2>
+    <div class="row">
+      <label class="field">Opponent <input type="text" id="opponentFaction" placeholder="e.g. Onyx Crew"></label>
+      <label class="field">Result
+        <select id="warResult">
+          <option value="">Select&hellip;</option>
+          <option value="Win">Win</option>
+          <option value="Loss">Loss</option>
+        </select>
+      </label>
+      <label class="field">Date <input type="date" id="warDate"></label>
+      <span class="hint">Applies to every card &mdash; no need to repeat it per row in the CSV.</span>
     </div>
   </section>
 
   <section class="card-panel" id="outputPanel" hidden>
-    <h2>3 &middot; Preview and download</h2>
+    <h2>4 &middot; Preview and download</h2>
     <div class="row">
       <button type="button" id="downloadOne">Download this card</button>
       <button type="button" class="primary" id="downloadAll">Download all as ZIP</button>
