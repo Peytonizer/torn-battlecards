@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Torn Battlecards</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/css/app.css">
+<link rel="stylesheet" href="assets/css/card.css">
+</head>
+<body>
+<div class="wrap">
+
+  <header class="app-head">
+    <h1>Torn Battlecards</h1>
+    <span class="sub">Ranked war report cards, generated in your browser</span>
+  </header>
+
+  <section class="card-panel">
+    <h2>1 &middot; Load the war CSV</h2>
+    <div class="dropzone" id="dropzone">
+      <strong>Drop your war CSV here</strong>
+      or click to choose a file
+    </div>
+    <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
+    <div class="row" style="margin-top:12px">
+      <a class="btn" href="data/template.csv" download>Download blank template</a>
+      <button type="button" id="loadSample">Load sample war</button>
+      <span class="spacer"></span>
+      <span class="hint" id="fileLabel">No file loaded</span>
+    </div>
+    <div class="messages" id="messages"></div>
+  </section>
+
+  <section class="card-panel">
+    <h2>2 &middot; Faction logo <span class="hint" style="text-transform:none;letter-spacing:0">(optional, remembered on this computer)</span></h2>
+    <div class="row">
+      <input type="file" id="logoInput" accept="image/*">
+      <button type="button" id="clearLogo">Clear logo</button>
+      <span class="hint">A square PNG works best. Nothing is uploaded anywhere &mdash; it stays in this browser.</span>
+    </div>
+  </section>
+
+  <section class="card-panel" id="outputPanel" hidden>
+    <h2>3 &middot; Preview and download</h2>
+    <div class="row">
+      <button type="button" id="downloadOne">Download this card</button>
+      <button type="button" class="primary" id="downloadAll">Download all as ZIP</button>
+      <label class="hint">Card size
+        <select id="cardScale">
+          <option value="1" selected>1&times; &mdash; 1354&times;752 (best for Discord)</option>
+          <option value="2">2&times; &mdash; 2708&times;1504 (print quality)</option>
+        </select>
+      </label>
+      <span class="spacer"></span>
+      <span class="progress" id="progress"></span>
+    </div>
+    <div class="layout">
+      <div class="roster card-panel" style="margin-top:0;padding:8px">
+        <ul id="roster"></ul>
+      </div>
+      <div class="preview">
+        <div class="preview-frame" id="previewFrame">
+          <div class="preview-scaler" id="previewScaler"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="app-foot">
+    Everything runs locally in your browser &mdash; the CSV is never uploaded to a server.
+    Cards export as 2708&times;1504 PNGs, which Discord displays without re-compressing to mush.
+  </footer>
+
+</div>
+
+<script src="vendor/papaparse.min.js"></script>
+<script src="vendor/html2canvas.min.js"></script>
+<script src="vendor/jszip.min.js"></script>
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/metrics.js"></script>
+<script src="assets/js/card.js"></script>
+<script src="assets/js/export.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>

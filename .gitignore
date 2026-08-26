@@ -1,0 +1,19 @@
+# Secrets and local config — never commit these
+.env
+.env.*
+config.json
+*.local.json
+
+# Generated output
+*.zip
+out/
+dist/
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Dependencies are vendored in vendor/ on purpose; node_modules is not used
+node_modules/
