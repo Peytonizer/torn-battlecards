@@ -43,13 +43,13 @@ var TBC = window.TBC || (window.TBC = {});
 
   /* The twelve rows of the Detailed Stats panel. `net_respect` is derived. */
   var DETAIL = [
+    { key: 'respect_gain',    label: 'Respect Gain' },
+    { key: 'respect_loss',    label: 'Respect Loss' },
     { key: 'net_respect',     label: 'Net Respect' },
     { key: 'total_energy',    label: 'Total Energy' },
-    { key: 'respect_gain',    label: 'Respect Gain' },
     { key: 'losses',          label: 'Losses' },
     { key: 'average_ff',      label: 'Average FF' },
     { key: 'defends_lost',    label: 'Defends Lost' },
-    { key: 'respect_loss',    label: 'Respect Loss' },
     { key: 'chain_hits',      label: 'Chain Hits' },
     { key: 'war_hits',        label: 'War Hits' },
     { key: 'assists',         label: 'Assists' },
