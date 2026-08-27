@@ -103,8 +103,16 @@ var TBC = window.TBC || (window.TBC = {});
         m.total_energy += ENERGY_PER_ATTACK;
         if (ff) { m._ffSum += ff; m._ffN++; }
 
-        if (result === 'Lost') m.losses++;
-        else if (result === 'Assist') m.assists++;
+        if (result === 'Lost') {
+          m.losses++;
+          // Dying to a target you were attacking still counts as an assist —
+          // you contributed damage even though you didn't land the finishing
+          // hit. Not mutually exclusive with losses: the same row counts
+          // toward both.
+          m.assists++;
+        } else if (result === 'Assist') {
+          m.assists++;
+        }
 
         if (isWin) {
           if (overseas > 1) m.foreign_attacks++;

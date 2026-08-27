@@ -17,10 +17,10 @@ See [`docs/SPEC.md`](docs/SPEC.md) for the full specification.
    Start from [`data/template.csv`](data/template.csv), or press **Load sample war**
    to see it working with real data. Alternatively, drop a YATA **Attacks report**
    (`.xlsx`, the raw per-attack export) onto the second drop zone — the app
-   calculates everything it can from it directly and lets you download a war CSV
-   for the faction leader to add grades and notes to. See
-   [the spec](docs/SPEC.md#11-importing-a-yata-attacks-report) for exactly what's
-   derived and the one stat (`assists`) that isn't fully recoverable from it.
+   calculates every numeric column from it directly and lets you download a
+   war CSV for the faction leader to add grades and notes to. See
+   [the spec](docs/SPEC.md#11-importing-a-yata-attacks-report) for exactly how
+   each column is derived.
 3. **Upload the faction logo** once (optional). It is remembered in that browser.
 4. **Preview** — click any member in the roster list on the left.
 5. **Download** — a single card, or the whole roster as a ZIP.

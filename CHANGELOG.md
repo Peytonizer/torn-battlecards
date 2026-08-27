@@ -10,9 +10,10 @@
   every derivable column itself, and populates the roster/preview exactly as
   an uploaded CSV would. A **Download CSV for the faction leader** button
   exports the result as a war CSV with `grade`/`impact_label`/`notes` left
-  blank. Every formula was reverse-engineered against a real war's known-good
-  numbers until it matched exactly — see `docs/SPEC.md` §11 for the full
-  derivation and its one known gap (`assists` is a partial count, not exact).
+  blank. Every column — including `assists`, once it was clear that a
+  member dying while attacking still counts as an assist, not just a loss —
+  was reverse-engineered against a real war's known-good numbers until it
+  matched exactly. See `docs/SPEC.md` §11 for the full derivation.
   Adds `vendor/xlsx.mini.min.js` (SheetJS 0.18.5) and `assets/js/attacks-report.js`.
 
 ### Removed
