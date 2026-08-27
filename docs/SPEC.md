@@ -255,14 +255,19 @@ Respect" summary sheet; look for one row per attack with columns `tId`,
 `fair_fight`, `war`, `retaliation`, `group_attack`, `overseas`,
 `chain_bonus`, `warlord_bonus`, `code`.
 
-Drop the file on the second dropzone in step 1. `attacks-report.js` parses it
-with the vendored SheetJS build (`xlsx.mini.min.js`), detects "your faction"
-(whoever attacks most in the file) and "the opponent" (whoever your faction's
-attacks land on most), and aggregates it into the same member records the CSV
-path produces — so the roster, live preview, and PNG export all work exactly
-as if a CSV had been uploaded. A **Download CSV for the faction leader**
-button then exports that roster as a war CSV, with `grade`, `impact_label`
-and `notes` left blank for the leader to fill in.
+Step 1 of the app is split into two sub-steps for exactly this two-stage
+workflow: Step A takes the raw Attacks report and produces the CSV; Step B is
+where the finished, leader-edited CSV gets loaded to actually build cards.
+Drop the file on Step A's dropzone. `attacks-report.js` parses it with the
+vendored SheetJS build (`xlsx.mini.min.js`), detects "your faction" (whoever
+attacks most in the file) and "the opponent" (whoever your faction's attacks
+land on most), and aggregates it into the same member records the CSV path
+produces — so the roster, live preview, and PNG export all work immediately,
+as a quick sanity check, exactly as if a CSV had been uploaded. The real next
+step is the **Download CSV for the faction leader** button: it exports that
+roster as a war CSV, sorted by `respect_gain` descending so the top performers
+are easy to find, with `grade`, `impact_label` and `notes` left blank for the
+leader to fill in before it comes back through Step B.
 
 Every formula below was reverse-engineered empirically: aggregate a real
 war's Attacks report every plausible way, diff the result against that war's

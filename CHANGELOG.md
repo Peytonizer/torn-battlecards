@@ -4,16 +4,19 @@
 
 ### Added
 
-- **Import a YATA Attacks report directly.** The raw per-attack `.xlsx` export
-  (not the "Total Respect" summary sheet) can be dropped onto a second drop
-  zone in step 1. The app detects your faction and the opponent, aggregates
-  every derivable column itself, and populates the roster/preview exactly as
-  an uploaded CSV would. A **Download CSV for the faction leader** button
-  exports the result as a war CSV with `grade`/`impact_label`/`notes` left
-  blank. Every column — including `assists`, once it was clear that a
-  member dying while attacking still counts as an assist, not just a loss —
-  was reverse-engineered against a real war's known-good numbers until it
-  matched exactly. See `docs/SPEC.md` §11 for the full derivation.
+- **Import a YATA Attacks report directly.** Step 1 is now split into Step A
+  (drop the raw per-attack `.xlsx` export — not the "Total Respect" summary
+  sheet — and the app detects your faction and the opponent and aggregates
+  every column itself) and Step B (load the finished, leader-edited CSV to
+  actually build cards), matching the real workflow: generate → hand to the
+  faction leader for grades/notes → load the finished file. The roster/preview
+  still populate straight after Step A too, as a quick sanity check. A
+  **Download CSV for the faction leader** button exports the result sorted by
+  `respect_gain` descending, with `grade`/`impact_label`/`notes` left blank.
+  Every column — including `assists`, once it was clear that a member dying
+  while attacking still counts as an assist, not just a loss — was
+  reverse-engineered against a real war's known-good numbers until it matched
+  exactly. See `docs/SPEC.md` §11 for the full derivation.
   Adds `vendor/xlsx.mini.min.js` (SheetJS 0.18.5) and `assets/js/attacks-report.js`.
 
 ### Removed

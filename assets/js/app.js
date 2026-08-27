@@ -133,6 +133,7 @@
     if (result.warnings.length > 6) say('…and ' + (result.warnings.length - 6) + ' more warnings.');
 
     outputPanel.hidden = false;
+    $('xlsxHint').hidden = true;
     renderRoster();
     renderPreview();
   }
@@ -201,6 +202,7 @@
 
     fileLabel.textContent = label + ' — ' + state.members.length + ' members';
     outputPanel.hidden = false;
+    $('xlsxHint').hidden = false;
     renderRoster();
     renderPreview();
   }

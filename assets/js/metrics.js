@@ -200,9 +200,13 @@ var TBC = window.TBC || (window.TBC = {});
   var CSV_DECIMAL_KEYS = { respect_gain: 1, respect_loss: 1, average_ff: 1 };
 
   /* Members back to CSV text, in the same column order as data/template.csv —
-     the shape officers fill by hand and the app itself round-trips. */
+     the shape officers fill by hand and the app itself round-trips. Sorted by
+     respect gain, highest first, so a faction leader skimming the file to
+     hand out grades sees the top performers up top rather than in upload order. */
   function toCsv(members) {
-    var rows = members.map(function (m) {
+    var rows = members.slice().sort(function (a, b) {
+      return (b.respect_gain || 0) - (a.respect_gain || 0);
+    }).map(function (m) {
       var row = {};
       FIELDS.forEach(function (f) {
         var v = m[f.key];

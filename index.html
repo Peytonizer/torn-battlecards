@@ -17,25 +17,12 @@
   </header>
 
   <section class="card-panel">
-    <h2>1 &middot; Load the war CSV</h2>
-    <div class="dropzone" id="dropzone">
-      <strong>Drop your war CSV here</strong>
-      or click to choose a file
-    </div>
-    <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
-    <div class="row" style="margin-top:12px">
-      <a class="btn" href="data/template.csv" download>Download blank template</a>
-      <button type="button" id="loadSample">Load sample war</button>
-      <span class="spacer"></span>
-      <span class="hint" id="fileLabel">No file loaded</span>
-    </div>
-    <div class="messages" id="messages"></div>
+    <h2>1 &middot; Build the war CSV</h2>
 
-    <hr class="section-divider">
-
-    <p class="hint">Or import a YATA <strong>Attacks report</strong> (.xlsx) — the raw
-      per-attack export, not the summary sheet. Everything the card needs is calculated
-      from it directly.</p>
+    <div class="subhead">Step A &mdash; generate one from a YATA Attacks report</div>
+    <p class="hint">Drop the raw per-attack <strong>Attacks report</strong> (.xlsx) &mdash;
+      not the summary sheet. Every stat the card needs is calculated from it directly.
+      Skip to Step B below if you already have a filled-in war CSV.</p>
     <div class="dropzone" id="xlsxDropzone">
       <strong>Drop the Attacks report .xlsx here</strong>
       or click to choose a file
@@ -48,6 +35,27 @@
       <span class="spacer"></span>
       <button type="button" class="primary" id="downloadGeneratedCsv">Download CSV for the faction leader</button>
     </div>
+    <p class="hint" id="xlsxHint" hidden>Grades and notes are blank in that file &mdash;
+      the preview below is just a sanity check. Send the CSV to your faction leader to fill
+      those in, then load the finished file below.</p>
+
+    <hr class="section-divider">
+
+    <div class="subhead">Step B &mdash; load the finished war CSV</div>
+    <p class="hint">Once grades and notes are filled in (by hand, or from Step A's download),
+      load it here to build the cards.</p>
+    <div class="dropzone" id="dropzone">
+      <strong>Drop your war CSV here</strong>
+      or click to choose a file
+    </div>
+    <input type="file" id="fileInput" accept=".csv,text/csv" hidden>
+    <div class="row" style="margin-top:12px">
+      <a class="btn" href="data/template.csv" download>Download blank template</a>
+      <button type="button" id="loadSample">Load sample war</button>
+      <span class="spacer"></span>
+      <span class="hint" id="fileLabel">No file loaded</span>
+    </div>
+    <div class="messages" id="messages"></div>
   </section>
 
   <section class="card-panel">

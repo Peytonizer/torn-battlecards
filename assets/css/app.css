@@ -14,6 +14,11 @@
 
 * { box-sizing: border-box; }
 
+/* A `[hidden]` element still needs this: any rule below that sets `display`
+   on the same element (e.g. `.row { display: flex }`) has equal specificity
+   and wins the cascade tie, silently showing something meant to stay hidden. */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   background: var(--bg);
@@ -94,6 +99,16 @@ button.primary:hover:not(:disabled) { background: var(--gold-bright); }
 .hint { color: var(--muted); font-size: 16px; }
 
 .section-divider { border: none; border-top: 1px solid var(--line); margin: 18px 0; }
+
+.subhead {
+  font-family: 'Oswald', sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--text);
+  margin-bottom: 6px;
+}
 
 .messages { margin-top: 12px; }
 .msg {
