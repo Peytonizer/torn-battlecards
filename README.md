@@ -68,15 +68,18 @@ python3 -m http.server 8000
 
 ## Deploying
 
-The repo folder *is* the deployable site — there is nothing to build. Options that
-cost nothing and do not put a GitHub username in the URL:
+The live site is GitHub Pages, deployed automatically by
+[`.github/workflows/pages.yml`](.github/workflows/pages.yml) on every push to
+`master`, served from the custom domain `battlecards.noradz.io` (a `CNAME` file
+plus DNS). To update the live site, just push to `master`.
+
+The repo folder is also just a deployable static site — there is nothing to
+build — so any static host works if you want to run your own copy:
 
 - **Cloudflare Pages** — create a project, choose *Direct Upload*, drag the folder in.
   Lands on `<project-name>.pages.dev`.
 - **Netlify Drop** — drag the folder onto <https://app.netlify.com/drop>, then rename
   the site in its settings. Lands on `<site-name>.netlify.app`.
-
-To update the live site, upload the folder again.
 
 ## Third-party code
 
