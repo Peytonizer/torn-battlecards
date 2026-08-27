@@ -195,6 +195,31 @@ var TBC = window.TBC || (window.TBC = {});
     return rank ? rank + ' / ' + size : '–';
   }
 
+  /* Numeric fields get 2 decimals if they're ever fractional, otherwise a
+     plain integer — matches how the CSV format's own examples look. */
+  var CSV_DECIMAL_KEYS = { respect_gain: 1, respect_loss: 1, average_ff: 1 };
+
+  /* Members back to CSV text, in the same column order as data/template.csv —
+     the shape officers fill by hand and the app itself round-trips. */
+  function toCsv(members) {
+    var rows = members.map(function (m) {
+      var row = {};
+      FIELDS.forEach(function (f) {
+        var v = m[f.key];
+        if (f.type === 'num') {
+          v = CSV_DECIMAL_KEYS[f.key] ? round2(v || 0) : Math.round(v || 0);
+        } else {
+          v = v || '';
+        }
+        row[f.key] = v;
+      });
+      return row;
+    });
+    return Papa.unparse({ fields: FIELDS.map(function (f) { return f.key; }), data: rows });
+  }
+
+  function round2(n) { return Math.round(n * 100) / 100; }
+
   TBC.metrics = {
     FIELDS: FIELDS,
     HEADLINE: HEADLINE,
@@ -204,6 +229,7 @@ var TBC = window.TBC || (window.TBC = {});
     addRanks: addRanks,
     formatValue: formatValue,
     formatRank: formatRank,
+    toCsv: toCsv,
     slug: slug
   };
 })();

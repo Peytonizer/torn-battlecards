@@ -30,6 +30,24 @@
       <span class="hint" id="fileLabel">No file loaded</span>
     </div>
     <div class="messages" id="messages"></div>
+
+    <hr class="section-divider">
+
+    <p class="hint">Or import a YATA <strong>Attacks report</strong> (.xlsx) — the raw
+      per-attack export, not the summary sheet. Everything the card needs is calculated
+      from it directly.</p>
+    <div class="dropzone" id="xlsxDropzone">
+      <strong>Drop the Attacks report .xlsx here</strong>
+      or click to choose a file
+    </div>
+    <input type="file" id="xlsxInput" accept=".xlsx" hidden>
+    <div class="row" id="factionRow" style="margin-top:12px" hidden>
+      <label class="field">Your faction <input type="text" id="detectedMyFaction"></label>
+      <label class="field">Opponent <input type="text" id="detectedOppFaction"></label>
+      <button type="button" id="recalculate">Recalculate</button>
+      <span class="spacer"></span>
+      <button type="button" class="primary" id="downloadGeneratedCsv">Download CSV for the faction leader</button>
+    </div>
   </section>
 
   <section class="card-panel">
@@ -97,8 +115,10 @@
 <script src="vendor/papaparse.min.js"></script>
 <script src="vendor/html2canvas.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
+<script src="vendor/xlsx.mini.min.js"></script>
 <script src="assets/js/icons.js"></script>
 <script src="assets/js/metrics.js"></script>
+<script src="assets/js/attacks-report.js"></script>
 <script src="assets/js/card.js"></script>
 <script src="assets/js/export.js"></script>
 <script src="assets/js/app.js"></script>

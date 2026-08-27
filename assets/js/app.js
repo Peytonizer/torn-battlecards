@@ -3,7 +3,7 @@
 (function () {
   var M = TBC.metrics;
 
-  var state = { members: [], active: 0, logo: null };
+  var state = { members: [], active: 0, logo: null, attackRows: null };
 
   var $ = function (id) { return document.getElementById(id); };
   var dropzone = $('dropzone'), fileInput = $('fileInput'), fileLabel = $('fileLabel');
@@ -175,6 +175,85 @@
         say('Could not load the sample. If you opened index.html straight from disk, ' +
             'the browser blocks reading data/sample-war.csv — drag the file onto the drop zone instead.', true);
       });
+  });
+
+  /* ------------------------------------------------------ Attacks report intake */
+  /* YATA's "Attacks report" export is a raw per-attack log, not a per-member
+     summary — TBC.attacksReport aggregates it into the same member shape the
+     CSV path produces, so everything downstream (roster, preview, CSV export)
+     is unchanged. See docs/SPEC.md §11 for how each column was derived. */
+
+  var AR = TBC.attacksReport;
+  var xlsxDropzone = $('xlsxDropzone'), xlsxInput = $('xlsxInput');
+  var factionRow = $('factionRow'), detectedMyFaction = $('detectedMyFaction'), detectedOppFaction = $('detectedOppFaction');
+
+  function runAggregation(label) {
+    var myFaction = detectedMyFaction.value.trim();
+    var oppFaction = detectedOppFaction.value.trim();
+    if (!myFaction) { say('Enter your faction name to calculate from the Attacks report.', true); return; }
+
+    var members = AR.aggregate(state.attackRows, myFaction, oppFaction);
+    if (!members.length) {
+      say('No attacks found for "' + myFaction + '" in that file — check the faction name.', true);
+      return;
+    }
+
+    state.members = M.addRanks(members);
+    state.active = 0;
+    if (!$('opponentFaction').value.trim() && oppFaction) $('opponentFaction').value = oppFaction;
+    applyWarMeta();
+
+    fileLabel.textContent = label + ' — ' + state.members.length + ' members';
+    outputPanel.hidden = false;
+    renderRoster();
+    renderPreview();
+  }
+
+  function handleAttacksReportFile(file) {
+    clearMessages();
+    AR.readWorkbook(file).then(function (rows) {
+      if (!rows.length) { say('That spreadsheet has no data rows.', true); return; }
+      state.attackRows = rows;
+
+      var det = AR.detectFactions(rows);
+      if (!det.myFaction) {
+        say('Could not detect a faction in that file — is it a YATA Attacks report?', true);
+        return;
+      }
+      detectedMyFaction.value = det.myFaction;
+      detectedOppFaction.value = det.oppFaction;
+      factionRow.hidden = false;
+
+      runAggregation(file.name);
+    }).catch(function (err) { say(err.message, true); });
+  }
+
+  xlsxDropzone.addEventListener('click', function () { xlsxInput.click(); });
+  xlsxInput.addEventListener('change', function (e) {
+    if (e.target.files && e.target.files[0]) handleAttacksReportFile(e.target.files[0]);
+  });
+  ['dragenter', 'dragover'].forEach(function (ev) {
+    xlsxDropzone.addEventListener(ev, function (e) { e.preventDefault(); xlsxDropzone.classList.add('is-over'); });
+  });
+  ['dragleave', 'drop'].forEach(function (ev) {
+    xlsxDropzone.addEventListener(ev, function (e) { e.preventDefault(); xlsxDropzone.classList.remove('is-over'); });
+  });
+  xlsxDropzone.addEventListener('drop', function (e) {
+    var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+    if (f) handleAttacksReportFile(f);
+  });
+
+  $('recalculate').addEventListener('click', function () {
+    if (!state.attackRows) return;
+    clearMessages();
+    runAggregation(fileLabel.textContent.split(' — ')[0]);
+  });
+
+  $('downloadGeneratedCsv').addEventListener('click', function () {
+    if (!state.members.length) return;
+    var csv = M.toCsv(state.members);
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+    TBC.exporter.download(blob, 'war-report.csv');
   });
 
   /* -------------------------------------------------------------- rendering */

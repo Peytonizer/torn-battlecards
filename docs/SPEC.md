@@ -50,13 +50,15 @@ torn-battlecards/
 │   └── js/
 │       ├── icons.js           # inline SVG icons as data: URIs
 │       ├── metrics.js         # CSV schema, normalisation, ranking, formatting
+│       ├── attacks-report.js  # aggregates a raw YATA Attacks report into member rows (§11)
 │       ├── card.js            # builds one card's DOM + draws the radar canvas
 │       ├── export.js          # html2canvas → PNG, JSZip → bulk ZIP
 │       └── app.js             # UI wiring
 ├── vendor/                    # pinned third-party libs, committed on purpose
 │   ├── html2canvas.min.js     # 1.4.1
 │   ├── jszip.min.js           # 3.10.1
-│   └── papaparse.min.js       # 5.4.1
+│   ├── papaparse.min.js       # 5.4.1
+│   └── xlsx.mini.min.js       # 0.18.5 — reads the YATA Attacks report (§11)
 ├── data/
 │   ├── template.csv           # blank header row for officers to fill in
 │   └── sample-war.csv         # real August 2026 war data, example grades/notes
@@ -239,3 +241,50 @@ officer just retypes them for that session.
    wars except the logo.
 6. **Icons are hand-drawn SVG paths** and coarser than the reference card's
    illustrated set. Swapping them is a one-file change (`icons.js`).
+
+## 11. Importing a YATA Attacks report
+
+An officer doesn't have to build the war CSV by hand. YATA's **Attacks report**
+export (`Attacks_report_<warId>_attacks.xlsx`) is a raw log — one row per
+individual attack, not one row per member — and the app can turn that
+directly into a war CSV. This is a different YATA export from the "Total
+Respect" summary sheet; look for one row per attack with columns `tId`,
+`timestamp_started`, `attacker_faction`, `attacker_factionname`,
+`attacker_id`, `attacker_name`, `defender_faction`, `defender_factionname`,
+`defender_id`, `defender_name`, `result`, `respect_gain`, `chain`,
+`fair_fight`, `war`, `retaliation`, `group_attack`, `overseas`,
+`chain_bonus`, `warlord_bonus`, `code`.
+
+Drop the file on the second dropzone in step 1. `attacks-report.js` parses it
+with the vendored SheetJS build (`xlsx.mini.min.js`), detects "your faction"
+(whoever attacks most in the file) and "the opponent" (whoever your faction's
+attacks land on most), and aggregates it into the same member records the CSV
+path produces — so the roster, live preview, and PNG export all work exactly
+as if a CSV had been uploaded. A **Download CSV for the faction leader**
+button then exports that roster as a war CSV, with `grade`, `impact_label`
+and `notes` left blank for the leader to fill in.
+
+Every formula below was reverse-engineered empirically: aggregate a real
+war's Attacks report every plausible way, diff the result against that war's
+known-correct per-member numbers (preserved as `data/sample-war.csv`), and
+keep only the formula that matches every member exactly. Torn's actual
+server-side formulas aren't published, so this is inference from one war's
+data, not a documented spec — if a future war's export doesn't reconcile,
+that's the first thing to re-derive.
+
+| Column | Formula |
+|---|---|
+| `war_hits` | Count of the member's attacks against the opponent faction with `result` in `Attacked` / `Hospitalized` / `Mugged`. |
+| `losses` | Count of the member's attacks, against any faction, with `result = Lost`. |
+| `defends_lost` | Count of attacks *against* the member, by any other faction, with `result` in the win set **and non-zero `respect_gain`**. A `respect_gain` of exactly 0 was only ever seen on rows with no recorded attacker identity — an incomplete log entry — and Torn's own war page evidently doesn't tally those as a loss either. |
+| `chain_hits` | Count of the member's winning attacks where `chain_bonus > 1`. |
+| `foreign_attacks` | Count of the member's winning attacks where `overseas > 1`. |
+| `retaliations` | Count of the member's winning attacks where `retaliation > 1`. |
+| `respect_loss` | Sum of `respect_gain` on the same rows counted for `defends_lost` (an attacker's gain is the defender's loss). |
+| `total_energy` | `25 ×` the member's total attack row count, against any faction, **including `result = Assist` rows** — every attack attempt costs energy, win or lose. |
+| `average_ff` | Mean of `fair_fight` across the member's total attack row count — again, any faction, any result. Restricting this to war-opponent wins only (the obvious first guess) does not reproduce the real numbers; the full population does, exactly. |
+| `respect_gain` | Sum of `respect_gain` on winning attacks against the opponent, **except** chain-milestone rows (the 10th/25th/50th/100th/250th/500th hit of the chain), whose `chain_bonus` — and with it `respect_gain` — spikes to the milestone multiplier itself (e.g. `160.0` for the 250-chain bonus) rather than the attacker's real personal respect for that hit. `chain_bonus > 5` unambiguously flags one (every ordinary hit tops out around 1.7–2.0). Each flagged row is credited at the attacker's own average respect-per-normal-hit instead of its face value. |
+| `assists` | **Not reliably derivable.** The count of the member's `result = Assist` rows is a real but partial signal — it is exactly right for every member with zero assists, but undercounts everyone else by roughly half against Torn's own war-page total. Broadening the scope (any target faction), combining it with the `group_attack` bonus flag, and three different "a teammate hit the same target shortly before/after" timing heuristics were all tried and none reconciled either. The raw `Assist`-row count is what gets written to the CSV; treat it as a floor, not a final answer, and check it against the faction's war page. |
+
+`grade`, `impact_label` and `notes` have no source in this file and are left
+blank, same as an uploaded CSV missing those columns.

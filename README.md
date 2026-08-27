@@ -15,7 +15,12 @@ See [`docs/SPEC.md`](docs/SPEC.md) for the full specification.
 1. Open the app.
 2. **Load the war CSV.** Drag it onto the drop zone, or click to browse.
    Start from [`data/template.csv`](data/template.csv), or press **Load sample war**
-   to see it working with real data.
+   to see it working with real data. Alternatively, drop a YATA **Attacks report**
+   (`.xlsx`, the raw per-attack export) onto the second drop zone — the app
+   calculates everything it can from it directly and lets you download a war CSV
+   for the faction leader to add grades and notes to. See
+   [the spec](docs/SPEC.md#11-importing-a-yata-attacks-report) for exactly what's
+   derived and the one stat (`assists`) that isn't fully recoverable from it.
 3. **Upload the faction logo** once (optional). It is remembered in that browser.
 4. **Preview** — click any member in the roster list on the left.
 5. **Download** — a single card, or the whole roster as a ZIP.
@@ -76,6 +81,7 @@ Pinned and committed under `vendor/` so no install step is needed:
 | [PapaParse](https://www.papaparse.com/) | 5.4.1 | CSV parsing |
 | [html2canvas](https://html2canvas.hertzen.com/) | 1.4.1 | DOM → PNG |
 | [JSZip](https://stuk.github.io/jszip/) | 3.10.1 | bulk ZIP |
+| [SheetJS](https://sheetjs.com/) (`xlsx.mini.min.js`) | 0.18.5 | reading a YATA Attacks report `.xlsx` |
 
 Fonts are Oswald and Barlow Condensed (SIL Open Font License 1.1), embedded as
 base64 in `assets/fonts/fonts.css` so cards render identically offline.

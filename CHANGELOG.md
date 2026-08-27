@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+### Added
+
+- **Import a YATA Attacks report directly.** The raw per-attack `.xlsx` export
+  (not the "Total Respect" summary sheet) can be dropped onto a second drop
+  zone in step 1. The app detects your faction and the opponent, aggregates
+  every derivable column itself, and populates the roster/preview exactly as
+  an uploaded CSV would. A **Download CSV for the faction leader** button
+  exports the result as a war CSV with `grade`/`impact_label`/`notes` left
+  blank. Every formula was reverse-engineered against a real war's known-good
+  numbers until it matched exactly — see `docs/SPEC.md` §11 for the full
+  derivation and its one known gap (`assists` is a partial count, not exact).
+  Adds `vendor/xlsx.mini.min.js` (SheetJS 0.18.5) and `assets/js/attacks-report.js`.
+
 ### Changed
 
 - **War metadata moved out of the CSV, into the app.** `faction_name`, `faction_tag`,
