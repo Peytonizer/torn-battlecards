@@ -105,7 +105,7 @@ var TBC = window.TBC || (window.TBC = {});
     zipName: function (members) {
       var m = members[0] || {};
       var bits = ['battlecards'];
-      if (m.faction_tag) bits.push(safeName(m.faction_tag));
+      if (m.faction_name) bits.push(safeName(m.faction_name));
       if (m.war_date) bits.push(safeName(m.war_date));
       return bits.join('_') + '.zip';
     }

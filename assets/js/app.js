@@ -52,26 +52,24 @@
   });
 
   /* --------------------------------------------------------- war details */
-  /* Faction name/tag/opponent/result/date used to be CSV columns, repeated on
+  /* Faction name/opponent/result/date used to be CSV columns, repeated on
      every row and only typed once thanks to row-1 inheritance. They are war
      metadata, not per-member data, so they live here instead — typed once per
      upload and stamped onto every member record. */
 
   var FACTION_KEY = 'tbc.myFaction';
-  var warFieldIds = ['myFactionName', 'myFactionTag', 'opponentFaction', 'warResult', 'warDate'];
+  var warFieldIds = ['myFactionName', 'opponentFaction', 'warResult', 'warDate'];
 
   function loadStoredFaction() {
     try {
       var f = JSON.parse(localStorage.getItem(FACTION_KEY) || 'null');
-      if (f) { $('myFactionName').value = f.name || ''; $('myFactionTag').value = f.tag || ''; }
+      if (f) $('myFactionName').value = f.name || '';
     } catch (e) { /* private browsing — fields just start blank */ }
   }
 
   function storeFaction() {
     try {
-      localStorage.setItem(FACTION_KEY, JSON.stringify({
-        name: $('myFactionName').value.trim(), tag: $('myFactionTag').value.trim()
-      }));
+      localStorage.setItem(FACTION_KEY, JSON.stringify({ name: $('myFactionName').value.trim() }));
     } catch (e) { /* private browsing — just won't persist */ }
   }
 
@@ -80,14 +78,12 @@
   function applyWarMeta() {
     var meta = {
       faction_name: $('myFactionName').value.trim(),
-      faction_tag: $('myFactionTag').value.trim(),
       opponent_faction: $('opponentFaction').value.trim(),
       war_result: $('warResult').value,
       war_date: $('warDate').value
     };
     state.members.forEach(function (m) {
       m.faction_name = meta.faction_name;
-      m.faction_tag = meta.faction_tag;
       m.opponent_faction = meta.opponent_faction;
       m.war_result = meta.war_result;
       m.war_date = meta.war_date;

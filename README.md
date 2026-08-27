@@ -33,8 +33,9 @@ Card size defaults to 1354×752, which keeps a full roster's ZIP under Discord's
 One row per member. Full column reference is in
 [the spec](docs/SPEC.md#5-csv-format); the short version:
 
-- **Type once:** `faction_name`, `faction_tag`, `opponent_faction`, `war_result`,
-  `war_date` only need filling on the first row — blank cells below inherit them.
+- **Not in the CSV at all:** your faction name, the opponent, the result and the
+  date are typed once in the app itself (see "Your faction" and "This war") and
+  applied to every card — there's nothing to repeat per row.
 - **Paste from the war report:** `respect_gain`, `respect_loss`, `total_energy`,
   `war_hits`, `losses`, `average_ff`, `defends_lost`, `chain_hits`, `assists`,
   `foreign_attacks`, `retaliations`. Blank counts as zero.

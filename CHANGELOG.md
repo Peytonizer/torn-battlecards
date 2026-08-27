@@ -15,6 +15,15 @@
   derivation and its one known gap (`assists` is a partial count, not exact).
   Adds `vendor/xlsx.mini.min.js` (SheetJS 0.18.5) and `assets/js/attacks-report.js`.
 
+### Removed
+
+- **Faction tag.** The "Your faction" form was name + tag; the card showed
+  `FACTION [TAG]`. Now it's just the faction name — no bracketed tag anywhere
+  in the UI or on the card. `localStorage` under `tbc.myFaction` now stores
+  only `{ name }`; loading an older stored value with a `tag` field just
+  ignores it. A CSV with a leftover `faction_tag`/`tag` column still parses
+  fine — it's recognised and silently dropped, same as before.
+
 ### Changed
 
 - **War metadata moved out of the CSV, into the app.** `faction_name`, `faction_tag`,

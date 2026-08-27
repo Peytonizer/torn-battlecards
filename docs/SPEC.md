@@ -139,12 +139,12 @@ fields below now win regardless.
 
 ### 5.4 War metadata lives in the app, not the CSV
 
-Faction name/tag, opponent, result and date describe the war, not the member, so
-one CSV row's worth of them is one too many: every row repeated the same five
+Faction name, opponent, result and date describe the war, not the member, so
+one CSV row's worth of them is one too many: every row repeated the same four
 values, and inheriting them down the file (the old approach) still meant retyping
 them on row 1 of every new upload. They are now two small forms in the app itself:
 
-- **"Your faction"** (name + tag) — persisted in `localStorage` alongside the logo,
+- **"Your faction"** (name only) — persisted in `localStorage` alongside the logo,
   since it rarely changes between wars.
 - **"This war"** (opponent, result, date) — typed fresh each upload; the date
   defaults to today.
@@ -170,7 +170,7 @@ Fixed 1354×752 layout, dark with `#c8912e` gold. Rendered as DOM and rasterised
 not drawn on a canvas — so the layout stays editable in CSS.
 
 **Header:** faction logo bubble (or initials fallback) · "TORN WAR REPORT CARD" ·
-name · `#rank` · `FACTION [TAG]` · a 2×2 meta grid (Opponent, Result, War Date,
+name · `#rank` · faction name · a 2×2 meta grid (Opponent, Result, War Date,
 Net Respect) · oversized rank numeral.
 
 **Column 1 — War Summary:** the seven headline metrics with value and rank, then the
@@ -224,9 +224,9 @@ so it persists per browser. It cannot live in the CSV. Falls back to the faction
 initials in a gold ring. `localStorage` access is wrapped in `try`/`catch` for
 private-browsing mode.
 
-Faction name and tag persist the same way, under `tbc.myFaction` (see §5.4) —
-also wrapped in `try`/`catch`, also gone in private browsing, in which case the
-officer just retypes them for that session.
+Faction name persists the same way, under `tbc.myFaction` (see §5.4) — also
+wrapped in `try`/`catch`, also gone in private browsing, in which case the
+officer just retypes it for that session.
 
 ## 10. Known gaps / backlog
 

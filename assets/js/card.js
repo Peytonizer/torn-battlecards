@@ -165,9 +165,7 @@ var TBC = window.TBC || (window.TBC = {});
     nameline.appendChild(el('span', 'bc-rankhash', '#' + member.overall_rank));
     ident.appendChild(nameline);
 
-    var factionText = member.faction_name || '';
-    if (member.faction_tag) factionText += (factionText ? ' ' : '') + '[' + member.faction_tag + ']';
-    ident.appendChild(el('div', 'bc-faction', factionText));
+    ident.appendChild(el('div', 'bc-faction', member.faction_name || ''));
     h.appendChild(ident);
 
     var meta = el('div', 'bc-meta');
