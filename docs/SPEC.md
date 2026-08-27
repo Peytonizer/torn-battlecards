@@ -1,7 +1,8 @@
 # Torn Battlecards — Specification
 
-Status: **v0.1 working end-to-end.** Loads a war CSV, previews a card per member,
-exports single PNGs or a ZIP of all cards.
+Status: **v0.2 working end-to-end.** Loads a war CSV (by hand or generated from a
+YATA Attacks report), previews a card per member, exports single PNGs or a ZIP of
+all cards.
 
 ---
 
@@ -32,11 +33,11 @@ The app is a folder of static files. Anything that serves static files works:
 
 - **Cloudflare Pages** — free, direct upload (drag the folder in, or `wrangler pages deploy`), URL is `<project-name>.pages.dev`. No GitHub link required.
 - **Netlify Drop** — free, drag the folder onto `app.netlify.com/drop`, URL is `<site-name>.netlify.app`, renameable in site settings.
-- **Vercel** — free Hobby tier, `<project-name>.vercel.app`. Fine, but it wants a Git repo or the `vercel` CLI, so it is slightly more setup than the two above.
-- **GitHub Pages** — works, but a personal repo publishes to `<username>.github.io/<repo>`, which puts the GitHub username in the URL. Hosting under a free GitHub **organisation** avoids that (`<org>.github.io/<repo>`).
+- **GitHub Pages** — a personal repo publishes to `<username>.github.io/<repo>`, which puts the GitHub username in the URL, but a custom domain (via a `CNAME` file plus DNS) avoids that.
 
-Chosen approach: **direct upload to Cloudflare Pages or Netlify**, keeping the Git
-repo private (or local-only). Deploying is copying a folder; there is nothing to build.
+Chosen approach: **GitHub Pages**, deployed automatically on every push to `master`
+by `.github/workflows/pages.yml`, served from a custom domain
+(`battlecards.noradz.io`). Deploying is a `git push`; there is nothing to build.
 
 ## 4. Repository layout
 

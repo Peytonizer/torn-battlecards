@@ -1,5 +1,0 @@
-# The app never reads docs/ at runtime — it's reference material for
-# maintainers, not part of the deployed site. docs/reference/ in particular
-# holds a real war's raw attack log (real member names), so it should not be
-# published to a public URL.
-docs/
