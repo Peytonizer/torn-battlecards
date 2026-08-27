@@ -24,7 +24,8 @@ See [`docs/SPEC.md`](docs/SPEC.md) for the full specification.
    - **Step B — load the finished one.** Once grades and notes are filled in, drop
      that CSV onto the drop zone (or click to browse). Start from
      [`data/template.csv`](data/template.csv) to fill one in by hand instead, or
-     press **Load sample war** to see the app working with real data.
+     press **Load sample war** to see the app working with a real war's stats
+     (member names are anonymized).
 3. **Upload the faction logo** once (optional). It is remembered in that browser.
 4. **Preview** — click any member in the roster list on the left.
 5. **Download** — a single card, or the whole roster as a ZIP.

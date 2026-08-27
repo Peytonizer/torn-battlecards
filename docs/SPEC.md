@@ -61,10 +61,10 @@ torn-battlecards/
 │   └── xlsx.mini.min.js       # 0.18.5 — reads the YATA Attacks report (§11)
 ├── data/
 │   ├── template.csv           # blank header row for officers to fill in
-│   └── sample-war.csv         # real August 2026 war data, example grades/notes
+│   └── sample-war.csv         # August 2026 war data (names anonymized), example grades/notes
 ├── docs/
 │   ├── SPEC.md                # this file
-│   └── reference/             # original battlecard.png and total_respect.csv
+│   └── reference/             # total_respect.csv and the raw Attacks report (names anonymized)
 ├── README.md
 └── CHANGELOG.md
 ```
