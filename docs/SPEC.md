@@ -16,7 +16,9 @@ Non-goals (deliberately out of scope for now):
 
 - No Torn API integration. The CSV is the only input.
 - No accounts, no database, no server.
-- No AI/LLM at runtime — the coach's notes and grade are typed by the officer.
+- No AI/LLM at runtime — the coach's notes are typed by the officer. `grade` is a
+  deterministic formula (§11.1), auto-filled when generated from an Attacks report
+  and freely hand-editable afterward; a CSV built by hand still needs it typed in.
 
 ## 2. Constraints
 
@@ -97,7 +99,7 @@ opponent, the result, the date — is **not** in the CSV at all; see §5.4.
 | 11 | `foreign_attacks` | number | | |
 | 12 | `retaliations` | number | | |
 | 13 | `defensive_hospitalizations` | number | | Only produced by the Attacks-report import (§11) — no manual "paste from the war report" source. Deliberately not shown on the card; see §5.2 point 8. |
-| 14 | `grade` | text | | Typed by hand. Shown in the gold impact bar, e.g. `A+`, `B-`. |
+| 14 | `grade` | text | | Auto-filled by the Attacks-report import (§11.1), e.g. `A+`, `B-`. Freely hand-editable afterward — a manually built CSV still needs it typed in. Shown in the gold impact bar. |
 | 15 | `impact_label` | text | | Typed by hand, e.g. `SOLID CONTRIBUTOR`. |
 | 16 | `notes` | text | | Typed by hand. The Coach's Notes panel. Quote it if it contains commas. |
 
@@ -275,8 +277,9 @@ produces — so the roster, live preview, and PNG export all work immediately,
 as a quick sanity check, exactly as if a CSV had been uploaded. The real next
 step is the **Download CSV for the faction leader** button: it exports that
 roster as a war CSV, sorted by `respect_gain` descending so the top performers
-are easy to find, with `grade`, `impact_label` and `notes` left blank for the
-leader to fill in before it comes back through Step B.
+are easy to find, with `grade` pre-filled with a computed suggestion (§11.1)
+and `impact_label`/`notes` left blank for the leader to fill in before it
+comes back through Step B.
 
 Every formula below was reverse-engineered empirically: aggregate a real
 war's Attacks report every plausible way, diff the result against that war's
@@ -301,5 +304,45 @@ that's the first thing to re-derive.
 | `assists` | Count of the member's attacks, against any faction, with `result = Assist` **or** `result = Lost`. Counting only `Assist` rows undercounts by roughly half — dying to a target you were attacking still credits an assist (you contributed damage even without landing the finishing hit), so a `Lost` row counts toward both `losses` and `assists` at once, not one or the other. |
 | `defensive_hospitalizations` | Count of the member's attacks against a fellow faction member (`attacker_faction === defender_faction === myFaction`) with `result = Hospitalized`, credited to the attacker. Unlike every other column here, this isn't reverse-engineered against a known-correct number — Torn's own war page never reported it — it's a straightforward count. Not part of `HEADLINE`/`DETAIL`/`RANKED`, so it's exported to the CSV but never shown on the card. |
 
-`grade`, `impact_label` and `notes` have no source in this file and are left
-blank, same as an uploaded CSV missing those columns.
+`impact_label` and `notes` have no source in this file and are left blank,
+same as an uploaded CSV missing those columns. `grade` is computed — see
+below.
+
+### 11.1 Auto-computed grade
+
+Only on this Attacks-report → CSV path (never on a manually built or
+re-uploaded CSV — see `normalise()` in `metrics.js`, which just keeps
+whatever text is already in `grade`, so a leader's hand-edited grade
+survives coming back through Step B unchanged). `computeGrades()` in
+`metrics.js` blends three signals into one composite z-score per member,
+each computed against that roster's own population mean/standard
+deviation and clamped to `±2` (so a metric with almost no spread across
+the roster — `defensive_hospitalizations` is `0` for most members most
+wars — can't let one outlier swamp the composite):
+
+| Signal | Weight | Why |
+|---|---|---|
+| `net_respect` | 0.70 | The primary signal. |
+| `average_ff` | 0.15 | Already a per-attack mean, not a raw count — reflects target quality/effort independently of attack volume. |
+| `defensive_hospitalizations` | 0.15 | Mercy-hosping an inactive faction-mate to protect them from the enemy. |
+
+If a metric has zero variance across the roster (every member tied, or a
+1-member roster), its z-score is `0` for everyone rather than dividing by
+zero. The composite is banded into the same ten grades every sample/
+reference CSV already uses — no `S`, no `F`:
+
+| Band | Grade |
+|---|---|
+| `z ≥ 1.5` | A+ |
+| `1.0 ≤ z < 1.5` | A |
+| `0.5 ≤ z < 1.0` | A- |
+| `0.15 ≤ z < 0.5` | B+ |
+| `-0.15 ≤ z < 0.15` | B |
+| `-0.5 ≤ z < -0.15` | B- |
+| `-1.0 ≤ z < -0.5` | C+ |
+| `-1.5 ≤ z < -1.0` | C |
+| `-2.0 ≤ z < -1.5` | C- |
+| `z < -2.0` | D |
+
+Most members land in the B range, with A and C-and-below as the bell-curve
+tails.

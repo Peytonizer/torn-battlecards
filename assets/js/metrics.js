@@ -189,6 +189,65 @@ var TBC = window.TBC || (window.TBC = {});
     return members;
   }
 
+  /* Auto-grade suggestion for the Attacks-report → CSV path only (see
+     runAggregation() in app.js). Never called on a hand-built/re-uploaded
+     CSV — normalise() just keeps whatever text is already in `grade`, which
+     is how an officer's override survives a round trip through Step B.
+
+     Blends three signals into one composite z-score, each weighted and
+     clamped to ±2 so a roster where one metric has almost no spread (e.g.
+     defensive_hospitalizations is 0 for most members most wars) can't let a
+     single outlier swamp the other two:
+       - net_respect (0.70)              — the primary signal.
+       - average_ff (0.15)               — a per-attack mean already, so it
+         reflects target quality/effort independently of attack volume.
+       - defensive_hospitalizations (0.15) — mercy-hosping an inactive
+         faction-mate to protect them from the enemy.
+     The composite is then banded into the same ten grades every sample/
+     reference CSV already uses (no S, no F) — most members land in the
+     B range, with A/C-and-below the bell-curve tails. */
+  var GRADE_WEIGHTS = { net_respect: 0.70, average_ff: 0.15, defensive_hospitalizations: 0.15 };
+  var GRADE_BANDS = [
+    { min: 1.5,        grade: 'A+' },
+    { min: 1.0,        grade: 'A' },
+    { min: 0.5,        grade: 'A-' },
+    { min: 0.15,       grade: 'B+' },
+    { min: -0.15,      grade: 'B' },
+    { min: -0.5,       grade: 'B-' },
+    { min: -1.0,       grade: 'C+' },
+    { min: -1.5,       grade: 'C' },
+    { min: -2.0,       grade: 'C-' },
+    { min: -Infinity,  grade: 'D' }
+  ];
+  var GRADE_CLAMP = 2;
+
+  function computeGrades(members) {
+    var n = members.length;
+    if (!n) return members;
+
+    // Population z-score per member for one metric. A metric with zero
+    // spread (every member tied, or n === 1) contributes 0 rather than
+    // dividing by zero.
+    function zScores(key) {
+      var mean = members.reduce(function (s, m) { return s + m[key]; }, 0) / n;
+      var variance = members.reduce(function (s, m) { return s + Math.pow(m[key] - mean, 2); }, 0) / n;
+      var sd = Math.sqrt(variance);
+      return members.map(function (m) { return sd ? (m[key] - mean) / sd : 0; });
+    }
+
+    var z = {};
+    Object.keys(GRADE_WEIGHTS).forEach(function (key) { z[key] = zScores(key); });
+
+    members.forEach(function (m, i) {
+      var composite = Object.keys(GRADE_WEIGHTS).reduce(function (sum, key) {
+        var clamped = Math.max(-GRADE_CLAMP, Math.min(GRADE_CLAMP, z[key][i]));
+        return sum + GRADE_WEIGHTS[key] * clamped;
+      }, 0);
+      m.grade = GRADE_BANDS.filter(function (b) { return composite >= b.min; })[0].grade;
+    });
+    return members;
+  }
+
   /* ------------------------------------------------------------ formatting */
 
   function formatValue(key, value) {
@@ -236,6 +295,7 @@ var TBC = window.TBC || (window.TBC = {});
     columnNames: FIELDS.map(function (f) { return f.key; }),
     normalise: normalise,
     addRanks: addRanks,
+    computeGrades: computeGrades,
     formatValue: formatValue,
     formatRank: formatRank,
     toCsv: toCsv,

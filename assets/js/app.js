@@ -195,7 +195,7 @@
       return;
     }
 
-    state.members = M.addRanks(members);
+    state.members = M.addRanks(M.computeGrades(members));
     state.active = 0;
     if (!$('opponentFaction').value.trim() && oppFaction) $('opponentFaction').value = oppFaction;
     applyWarMeta();

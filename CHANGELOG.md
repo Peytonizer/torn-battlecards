@@ -13,6 +13,16 @@
   source for it. It's CSV-only by design — not added to `HEADLINE`,
   `DETAIL` or `RANKED` in `metrics.js`, so it never appears on the card.
   `data/template.csv` and `data/sample-war.csv` updated to match.
+- **Auto-computed `grade`.** The CSV generated from an Attacks report now
+  comes with `grade` pre-filled instead of blank — a composite z-score of
+  `net_respect` (0.70), `average_ff` (0.15) and `defensive_hospitalizations`
+  (0.15), each clamped to ±2 and banded into the same ten grades
+  (`A+`…`D`) every sample CSV already uses, so most members land in the B
+  range with A/C-and-below as the bell-curve tails. It's only computed on
+  this path — a manually built or re-uploaded CSV keeps whatever's already
+  in the `grade` column untouched, so a leader's hand-edit always sticks.
+  See `docs/SPEC.md` §11.1 for the full formula. `computeGrades()` added
+  to `metrics.js`.
 
 ## v0.2 — 2026-08-27
 
