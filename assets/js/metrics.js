@@ -25,6 +25,11 @@ var TBC = window.TBC || (window.TBC = {});
     { key: 'assists',          type: 'num',  aliases: [] },
     { key: 'foreign_attacks',  type: 'num',  aliases: ['foreign attack'] },
     { key: 'retaliations',     type: 'num',  aliases: ['retals', 'retaliation'] },
+    // Faction-mate hospitalized their own teammate (e.g. "mercy-hosping" an
+    // inactive member so the enemy can't keep hitting them free). CSV-only:
+    // deliberately absent from HEADLINE/DETAIL/RANKED, so it never renders
+    // on the card or feeds the radar/rank calculations.
+    { key: 'defensive_hospitalizations', type: 'num', aliases: [] },
     { key: 'grade',            type: 'text', aliases: ['rating', 'overall grade'] },
     { key: 'impact_label',     type: 'text', aliases: ['impact', 'overall impact'] },
     { key: 'notes',            type: 'text', aliases: ["coach's notes", 'coach notes', 'comments'] }

@@ -96,9 +96,10 @@ opponent, the result, the date — is **not** in the CSV at all; see §5.4.
 | 10 | `assists` | number | | |
 | 11 | `foreign_attacks` | number | | |
 | 12 | `retaliations` | number | | |
-| 13 | `grade` | text | | Typed by hand. Shown in the gold impact bar, e.g. `A+`, `B-`. |
-| 14 | `impact_label` | text | | Typed by hand, e.g. `SOLID CONTRIBUTOR`. |
-| 15 | `notes` | text | | Typed by hand. The Coach's Notes panel. Quote it if it contains commas. |
+| 13 | `defensive_hospitalizations` | number | | Only produced by the Attacks-report import (§11) — no manual "paste from the war report" source. Deliberately not shown on the card; see §5.2 point 8. |
+| 14 | `grade` | text | | Typed by hand. Shown in the gold impact bar, e.g. `A+`, `B-`. |
+| 15 | `impact_label` | text | | Typed by hand, e.g. `SOLID CONTRIBUTOR`. |
+| 16 | `notes` | text | | Typed by hand. The Coach's Notes panel. Quote it if it contains commas. |
 
 Blank numeric cells are read as `0`. Whitespace is trimmed.
 
@@ -126,6 +127,13 @@ Blank numeric cells are read as `0`. Whitespace is trimmed.
    It is now typed once per session, in the app.
 7. **Dropped `Hospitalization`.** Not shown anywhere on the card. If it should be,
    add it to `FIELDS`, `DETAIL` and `RANKED` in `metrics.js`.
+8. **Added `defensive_hospitalizations`.** Distinct from the dropped raw
+   `Hospitalization` column above — this is a *derived* stat, only ever produced
+   by the Attacks-report import (§11): a member hospitalizing their own
+   faction-mate (e.g. "mercy-hosping" an inactive member so the enemy can't keep
+   hitting them for free), credited to the attacker. It's in `FIELDS` (so it
+   round-trips through the CSV) but deliberately absent from
+   `HEADLINE`/`DETAIL`/`RANKED` — CSV-only, never shown on the card.
 
 ### 5.3 Header tolerance
 
@@ -291,6 +299,7 @@ that's the first thing to re-derive.
 | `average_ff` | Mean of `fair_fight` across the member's total attack row count — again, any faction, any result. Restricting this to war-opponent wins only (the obvious first guess) does not reproduce the real numbers; the full population does, exactly. |
 | `respect_gain` | Sum of `respect_gain` on winning attacks against the opponent, **except** chain-milestone rows (the 10th/25th/50th/100th/250th/500th hit of the chain), whose `chain_bonus` — and with it `respect_gain` — spikes to the milestone multiplier itself (e.g. `160.0` for the 250-chain bonus) rather than the attacker's real personal respect for that hit. `chain_bonus > 5` unambiguously flags one (every ordinary hit tops out around 1.7–2.0). Each flagged row is credited at the attacker's own average respect-per-normal-hit instead of its face value. |
 | `assists` | Count of the member's attacks, against any faction, with `result = Assist` **or** `result = Lost`. Counting only `Assist` rows undercounts by roughly half — dying to a target you were attacking still credits an assist (you contributed damage even without landing the finishing hit), so a `Lost` row counts toward both `losses` and `assists` at once, not one or the other. |
+| `defensive_hospitalizations` | Count of the member's attacks against a fellow faction member (`attacker_faction === defender_faction === myFaction`) with `result = Hospitalized`, credited to the attacker. Unlike every other column here, this isn't reverse-engineered against a known-correct number — Torn's own war page never reported it — it's a straightforward count. Not part of `HEADLINE`/`DETAIL`/`RANKED`, so it's exported to the CSV but never shown on the card. |
 
 `grade`, `impact_label` and `notes` have no source in this file and are left
 blank, same as an uploaded CSV missing those columns.

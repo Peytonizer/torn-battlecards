@@ -1,5 +1,19 @@
 # Changelog
 
+## Unreleased
+
+### Added
+
+- **`defensive_hospitalizations` column.** When one of your own members
+  hospitalizes a faction-mate — usually deliberate "mercy-hosping" of an
+  inactive member so the enemy can't keep landing free hits on them — the
+  attacker is now credited with it in the generated CSV. It's produced only
+  by the Attacks-report import (§11 of `docs/SPEC.md`), since Torn's war
+  page never reported it; there's no manual "paste from the war report"
+  source for it. It's CSV-only by design — not added to `HEADLINE`,
+  `DETAIL` or `RANKED` in `metrics.js`, so it never appears on the card.
+  `data/template.csv` and `data/sample-war.csv` updated to match.
+
 ## v0.2 — 2026-08-27
 
 ### Added

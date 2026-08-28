@@ -78,6 +78,7 @@ var TBC = window.TBC || (window.TBC = {});
           respect_gain: 0, respect_loss: 0, total_energy: 0,
           war_hits: 0, losses: 0, average_ff: 0, defends_lost: 0,
           chain_hits: 0, assists: 0, foreign_attacks: 0, retaliations: 0,
+          defensive_hospitalizations: 0,
           grade: '', impact_label: '', notes: '',
           _ffSum: 0, _ffN: 0, _normalGain: [], _milestoneHits: 0
         };
@@ -122,6 +123,12 @@ var TBC = window.TBC || (window.TBC = {});
             m.war_hits++;
             if (chainBonus > MILESTONE_CHAIN_BONUS) m._milestoneHits++;
             else m._normalGain.push(respect);
+          } else if (dFac === myFaction && result === 'Hospitalized') {
+            // Hospitalizing your own faction-mate is usually deliberate —
+            // "mercy-hosping" an inactive member so the enemy can't keep
+            // hitting them for free. Credited to the attacker, not the
+            // (now-hospitalized) defender.
+            m.defensive_hospitalizations++;
           }
         }
       }
