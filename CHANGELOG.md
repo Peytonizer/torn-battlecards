@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v1.0.0 — 2026-11-16
+
 ### Added
 
 - **`defensive_hospitalizations` column.** When one of your own members
